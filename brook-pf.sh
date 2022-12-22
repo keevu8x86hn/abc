@@ -2,6 +2,14 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
+#=================================================
+#	System Required: CentOS/Debian/Ubuntu
+#	Description: Brook
+#	Version: 1.0.6
+#	Author: Toyo
+#	Blog: https://doub.io/wlzy-jc37/
+#=================================================
+
 sh_ver="1.0.6"
 filepath=$(cd "$(dirname "$0")"; pwd)
 file_1=$(echo -e "${filepath}"|awk -F "$0" '{print $1}')
@@ -64,9 +72,9 @@ Download_brook(){
 	[[ ! -e ${file} ]] && mkdir ${file}
 	cd ${file}
 	if [[ ${bit} == "x86_64" ]]; then
-		wget --no-check-certificate -N "https://github.com/keevu8x86hn/abc/blob/main/brook"
+		wget --no-check-certificate -N "https://github.com/keevu8x86hn/abc/raw/main/brook"
 	else
-		wget --no-check-certificate -N "https://github.com/keevu8x86hn/abc/blob/main/brook"
+		wget --no-check-certificate -N "https://github.com/keevu8x86hn/abc/raw/main/brook"
 		mv brook_linux_386 brook
 	fi
 	[[ ! -e "brook" ]] && echo -e "${Error} Brook 下载失败 !" && exit 1
@@ -74,14 +82,14 @@ Download_brook(){
 }
 Service_brook(){
 	if [[ ${release} = "centos" ]]; then
-		if ! wget --no-check-certificate https://github.com/keevu8x86hn/abc/blob/main/brook-pf -O /etc/init.d/brook-pf; then
+		if ! wget --no-check-certificate https://raw.githubusercontent.com/keevu8x86hn/abc/main/brook-pf -O /etc/init.d/brook-pf; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/brook-pf
 		chkconfig --add brook-pf
 		chkconfig brook-pf on
 	else
-		if ! wget --no-check-certificate https://github.com/keevu8x86hn/abc/blob/main/brook-pf -O /etc/init.d/brook-pf; then
+		if ! wget --no-check-certificate https://raw.githubusercontent.com/keevu8x86hn/abc/main/brook-pf -O /etc/init.d/brook-pf; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/brook-pf
