@@ -67,7 +67,37 @@ check_crontab_installed_status(){
 check_pid(){
 	PID=$(ps -ef| grep "brook relays"| grep -v grep| grep -v ".sh"| grep -v "init.d"| grep -v "service"| awk '{print $2}')
 }
-
+check_new_ver(){
+	echo -e "请输入要下载安装的 Brook 版本号 ${Green_font_prefix}[ 格式是日期，例如: v20180909 ]${Font_color_suffix}
+版本列表请去这里获取：${Green_font_prefix}[ https://github.com/txthinking/brook/releases ]${Font_color_suffix}"
+	read -e -p "直接回车即自动获取:" brook_new_ver
+	if [[ -z ${brook_new_ver} ]]; then
+		brook_new_ver=$(wget -qO- https://api.github.com/repos/txthinking/brook/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g')
+		[[ -z ${brook_new_ver} ]] && echo -e "${Error} Brook 最新版本获取失败！" && exit 1
+		echo -e "${Info} 检测到 Brook 最新版本为 [ ${brook_new_ver} ]"
+	else
+		echo -e "${Info} 开始下载 Brook [ ${brook_new_ver} ] 版本！"
+	fi
+}
+check_ver_comparison(){
+	brook_now_ver=$(${brook_file} -v|awk '{print $3}')
+	[[ -z ${brook_now_ver} ]] && echo -e "${Error} Brook 当前版本获取失败 !" && exit 1
+	brook_now_ver="v${brook_now_ver}"
+	if [[ "${brook_now_ver}" != "${brook_new_ver}" ]]; then
+		echo -e "${Info} 发现 Brook 已有新版本 [ ${brook_new_ver} ]，旧版本 [ ${brook_now_ver} ]"
+		read -e -p "是否更新 ? [Y/n] :" yn
+		[[ -z "${yn}" ]] && yn="y"
+		if [[ $yn == [Yy] ]]; then
+			check_pid
+			[[ ! -z $PID ]] && kill -9 ${PID}
+			rm -rf ${brook_file}
+			Download_brook
+			Start_brook
+		fi
+	else
+		echo -e "${Info} 当前 Brook 已是最新版本 [ ${brook_new_ver} ]" && exit 1
+	fi
+}
 Download_brook(){
 	[[ ! -e ${file} ]] && mkdir ${file}
 	cd ${file}
@@ -594,13 +624,13 @@ Set_iptables(){
 	fi
 }
 Update_Shell(){
-	sh_new_ver=$(wget --no-check-certificate -qO- -t1 -T3 "https://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/brook-pf.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1) && sh_new_type="github"
+	sh_new_ver=$(wget --no-check-certificate -qO- -t1 -T3 "https://raw.githubusercontent.com/keevu8x86hn/abc/main/brook-pf.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1) && sh_new_type="github"
 	[[ -z ${sh_new_ver} ]] && echo -e "${Error} 无法链接到 Github !" && exit 0
 	if [[ -e "/etc/init.d/brook-pf" ]]; then
 		rm -rf /etc/init.d/brook-pf
 		Service_brook
 	fi
-	wget -N --no-check-certificate "https://raw.githubusercontent.com/ToyoDAdoubiBackup/doubi/master/brook-pf.sh" && chmod +x brook.sh
+	wget -N --no-check-certificate "https://raw.githubusercontent.com/keevu8x86hn/abc/main/brook-pf.sh" && chmod +x brook.sh
 	echo -e "脚本已更新为最新版本[ ${sh_new_ver} ] !(注意：因为更新方式为直接覆盖当前运行的脚本，所以可能下面会提示一些报错，无视即可)" && exit 0
 }
 check_sys
