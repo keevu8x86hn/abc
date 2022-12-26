@@ -118,6 +118,8 @@ Service_brook(){
 		chmod +x /etc/init.d/brook-pf
 		chkconfig --add brook-pf
 		chkconfig brook-pf on
+		cp /etc/init.d/brook-pf /usr/local/brook-pf/
+		chmod +x /usr/local/brook-pf/brook-pf
 	else
 		if ! wget --no-check-certificate https://raw.githubusercontent.com/keevu8x86hn/abc/main/brook-pf -O /etc/init.d/brook-pf; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
