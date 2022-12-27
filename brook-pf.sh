@@ -125,6 +125,8 @@ Service_brook(){
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/brook-pf
+		cp /etc/init.d/brook-pf /usr/local/brook-pf/
+		chmod +x /usr/local/brook-pf/brook-pf
 		update-rc.d -f brook-pf defaults
 	fi
 	echo -e "${Info} Brook服务 管理脚本下载完成 !"
