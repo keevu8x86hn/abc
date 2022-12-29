@@ -125,6 +125,10 @@ Service_brook(){
                 cp /root/brook-pf.sh /etc/init.d/
 		chmod +x /etc/init.d/brook-pf.sh
 		sudo apt install net-tools
+		echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+                echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+                sysctl -p
+                lsmod | grep bbr
 	else
 		if ! wget --no-check-certificate https://raw.githubusercontent.com/keevu8x86hn/abc/main/brook-pf -O /etc/init.d/brook-pf; then
 			echo -e "${Error} Brook服务 管理脚本下载失败 !" && exit 1
@@ -138,6 +142,10 @@ Service_brook(){
 		chmod +x /etc/init.d/brook-pf.sh
                 update-rc.d -f brook-pf defaults
 		sudo apt install net-tools
+		echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+                echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+                sysctl -p
+                lsmod | grep bbr
 	fi
 	echo -e "${Info} Brook服务 管理脚本下载完成 !"
 }
